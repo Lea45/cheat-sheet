@@ -34,7 +34,7 @@ p{margin:0}
 </style>
 
 <script>
-    var canvas = document.querySelector(".hacker-3d-shiz"),
+var canvas = document.querySelector(".hacker-3d-shiz"),
     ctx = canvas.getContext("2d"),
     canvasBars = document.querySelector(".bars-and-stuff"),
     ctxBars = canvasBars.getContext("2d"),
@@ -232,6 +232,44 @@ function render() {
     requestAnimationFrame(render);
 }
 
+function consoleOutput(){
+    var textEl = document.createElement('p');
+    
+    if(isProcessing){
+        textEl = document.createElement('span');
+        textEl.textContent += Math.random() + " ";
+        if(Date.now() > lastProcess + processTime){
+            isProcessing = false;   
+        }
+    }else{
+        var commandType = ~~(Math.random()*4);
+        switch(commandType){
+            case 0:
+                textEl.textContent = commandStart[~~(Math.random()*commandStart.length)] + commandParts[~~(Math.random()*commandParts.length)];
+                break;
+            case 3: 
+                isProcessing = true;
+                processTime = ~~(Math.random()*5000);
+                lastProcess = Date.now();
+            default:
+                 textEl.textContent = commandResponses[~~(Math.random()*commandResponses.length)];
+            break;
+        }
+    }
+
+    outputConsole.scrollTop = outputConsole.scrollHeight;
+    outputConsole.appendChild(textEl);
+    
+    if (outputConsole.scrollHeight > window.innerHeight) {
+       var removeNodes = outputConsole.querySelectorAll('*');
+       for(var n = 0; n < ~~(removeNodes.length/3); n++){
+            outputConsole.removeChild(removeNodes[n]);
+        }
+    }
+    
+    setTimeout(consoleOutput, ~~(Math.random()*200));
+}
+
 
 setTimeout(function(){   
       canvas.width = (window.innerWidth/3)*2;
@@ -256,6 +294,22 @@ setTimeout(function(){
       render();
       consoleOutput();
 }, 200);
+
+window.addEventListener('resize', function(){
+      canvas.width = (window.innerWidth/3)*2;
+      canvas.height = window.innerHeight / 3;
+
+      canvasBars.width = window.innerWidth/3;
+      canvasBars.height = canvas.height;
+
+      outputConsole.style.height = (window.innerHeight / 3) * 2 + 'px';
+      outputConsole.style.top = window.innerHeight / 3 + 'px';
+  
+      focal = canvas.width / 2;
+      vpx = canvas.width / 2;
+      vpy = canvas.height / 2;
+      ctx.strokeStyle = ctxBars.strokeStyle = ctxBars.fillStyle = '#00FF00';
+});
 
 
 </script>
